@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const NavbarContainer = styled.div`
@@ -56,6 +57,7 @@ const ProfileImage = styled.img`
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
+  cursor: pointer;
 `;
 const RightIcon = styled.i`
   font-size: 18px;
@@ -64,6 +66,7 @@ const RightIcon = styled.i`
   margin-left: 15px;
 `;
 const Navbar = () => {
+  const user = true;
   return (
     <NavbarContainer>
       <Left>
@@ -73,18 +76,59 @@ const Navbar = () => {
       </Left>
       <Center>
         <List>
-          <ListItem>HOME</ListItem>
-          <ListItem>ABOUT</ListItem>
-          <ListItem>CONTACT</ListItem>
-          <ListItem>WRITE</ListItem>
-          <ListItem>LOGOUT</ListItem>
+          <ListItem>
+            <Link className="link" to="/">
+              HOME
+            </Link>
+          </ListItem>
+
+          <ListItem>
+            <Link className="link" to="/about">
+              ABOUT
+            </Link>
+          </ListItem>
+          <ListItem>
+            <Link className="link" to="/contact">
+              CONTACT
+            </Link>
+          </ListItem>
+          {user && (
+            <>
+              <ListItem>
+                <Link className="link" to="/write">
+                  WRITE
+                </Link>
+              </ListItem>
+              <ListItem>
+                <Link className="link" to="/logout">
+                  LOGOUT
+                </Link>
+              </ListItem>
+            </>
+          )}
         </List>
       </Center>
       <Right>
-        <ProfileImage
-          src="https://images.unsplash.com/photo-1634622484002-617ab0c40444?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=790&q=80"
-          alt=""
-        ></ProfileImage>
+        {user ? (
+          <ProfileImage
+            src="https://images.unsplash.com/photo-1634622484002-617ab0c40444?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=790&q=80"
+            alt=""
+          ></ProfileImage>
+        ) : (
+          <List>
+            <ListItem>
+              <Link className="link" to="/login">
+                LOGIN
+              </Link>
+            </ListItem>
+            <ListItem>
+              <Link className="link" to="/register">
+                REGISTER
+              </Link>
+            </ListItem>
+          </List>
+        )}
+
         <RightIcon className="fas fa-search"></RightIcon>
       </Right>
     </NavbarContainer>
