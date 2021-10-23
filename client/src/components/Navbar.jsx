@@ -82,16 +82,6 @@ const Navbar = () => {
             </Link>
           </ListItem>
 
-          <ListItem>
-            <Link className="link" to="/about">
-              ABOUT
-            </Link>
-          </ListItem>
-          <ListItem>
-            <Link className="link" to="/contact">
-              CONTACT
-            </Link>
-          </ListItem>
           {user && (
             <>
               <ListItem>

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -53,32 +54,25 @@ const PostDescription = styled.span`
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
 `;
-const Post = () => {
+const Post = ({ post }) => {
   return (
     <Container>
-      <PostImage
-        src="https://images.unsplash.com/photo-1634582870449-90577753e6e3?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80"
-        alt=""
-      />
+      {post.image && <PostImage src={post.image} alt="" />}
+
       <PostInfo>
         <PostCategories>
-          <PostCategory>Music</PostCategory>
-          <PostCategory>Life</PostCategory>
-          <PostCategory>Tech</PostCategory>
+          {post.categories.map((c) => (
+            <PostCategory>{c}</PostCategory>
+          ))}
         </PostCategories>
-        <PostTitle>Lorem ipsum dolor sit amet</PostTitle>
+        <Link className="link" to={`posts/${post._id}`}>
+          <PostTitle>{post.title}</PostTitle>
+        </Link>
+
         <hr />
-        <PostDate> 1h ago</PostDate>
+        <PostDate> {new Date(post.createdAt).toDateString()}</PostDate>
       </PostInfo>
-      <PostDescription>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit minus
-        eligendi, praesentium voluptatibus porro quibusdam, tenetur eaque nam
-        quo odio, corporis facere atque beatae doloribus deleniti alias autem
-        asperiores ad. Lorem ipsum dolor sit amet consectetur adipisicing elit.
-        Suscipit minus eligendi, praesentium voluptatibus porro quibusdam,
-        tenetur eaque nam quo odio, corporis facere atque beatae doloribus
-        deleniti alias autem asperiores ad.
-      </PostDescription>
+      <PostDescription>{post.body}</PostDescription>
     </Container>
   );
 };

@@ -20,8 +20,6 @@ const getAllPosts = async (req, res) => {
     queryObject.categories = { $in: [category] };
   }
 
-  console.log(queryObject);
-
   let result = Post.find(queryObject);
 
   // Sort functionality

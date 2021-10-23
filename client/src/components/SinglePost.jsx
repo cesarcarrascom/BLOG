@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { useLocation } from "react-router-dom";
 
 const Container = styled.div`
   flex: 9;
@@ -55,6 +56,9 @@ const PostText = styled.p`
 `;
 
 const SinglePost = () => {
+  const location = useLocation();
+  const path = location.pathname.split("/")[2];
+
   return (
     <Container>
       <Wrapper>
