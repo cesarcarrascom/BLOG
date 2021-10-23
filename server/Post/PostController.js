@@ -2,15 +2,25 @@ const Post = require("./PostModel");
 const { StatusCodes } = require("http-status-codes");
 
 const getAllPosts = async (req, res) => {
-  const { sort, name, newest } = req.query;
+  const { category, sort, title, newest, oldest, author } = req.query;
   const queryObject = {};
 
   newest ? (queryObject.newest = true) : false;
 
-  if (name) {
+  if (title) {
     // Finds title by case insensitive
-    queryObject.title = { $regex: name, $options: "i" };
+    queryObject.title = { $regex: title, $options: "i" };
   }
+
+  // if (author) {
+  //   queryObject.author = { $regex: author, $options: "i" };
+  // }
+
+  if (category) {
+    queryObject.categories = { $in: [category] };
+  }
+
+  console.log(queryObject);
 
   let result = Post.find(queryObject);
 
@@ -42,7 +52,7 @@ const getAllPosts = async (req, res) => {
   }
 };
 
-const getSinglePost = async (req, res) => {
+const getPost = async (req, res) => {
   try {
     const post = await Post.find({ _id: req.params.id });
     res.status(StatusCodes.OK).json({ post });
@@ -54,7 +64,9 @@ const getSinglePost = async (req, res) => {
 };
 
 const createPost = async (req, res) => {
+  req.body.author = req.user.userId;
   const newPost = new Post(req.body);
+
   try {
     const savedPost = await newPost.save();
     res.status(StatusCodes.CREATED).json({ savedPost });
@@ -65,14 +77,34 @@ const createPost = async (req, res) => {
   }
 };
 
-const updateSinglePost = async (req, res) => {
+const updatePost = async (req, res) => {
+  const {
+    user: { userId },
+    params: { id: postId },
+    body: { title, body, photo, categories },
+  } = req;
+
   try {
-    const updatedPost = await Post.findByIdAndUpdate(
-      req.params.id,
-      { $set: req.body },
-      { new: true }
-    );
-    res.status(StatusCodes.OK).json({ updatedPost });
+    const post = await Post.findOne({ postId });
+
+    if (userId == post.author) {
+      try {
+        const updatedPost = await Post.findByIdAndUpdate(
+          postId,
+          { $set: req.body },
+          { new: true, runValidators: true }
+        );
+        res.status(StatusCodes.OK).json({ updatedPost });
+      } catch (error) {
+        res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ error: error.message });
+      }
+    } else {
+      res
+        .status(StatusCodes.FORBIDDEN)
+        .json("You are not allowed in this route.");
+    }
   } catch (error) {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
@@ -80,10 +112,29 @@ const updateSinglePost = async (req, res) => {
   }
 };
 
-const deleteSinglePost = async (req, res) => {
+const deletePost = async (req, res) => {
+  const {
+    user: { userId },
+    params: { id: postId },
+  } = req;
+
   try {
-    await Post.findByIdAndDelete(req.params.id);
-    res.status(StatusCodes.OK).json({ msg: "Post has ben deleted..." });
+    const post = await Post.findOne({ postId });
+
+    if (userId == post.author) {
+      try {
+        await post.delete();
+        res.status(StatusCodes.OK).json({ msg: "Post has ben deleted..." });
+      } catch (error) {
+        res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ error: error.message });
+      }
+    } else {
+      res
+        .status(StatusCodes.FORBIDDEN)
+        .json("You are not allowed in this route.");
+    }
   } catch (error) {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
@@ -93,8 +144,8 @@ const deleteSinglePost = async (req, res) => {
 
 module.exports = {
   getAllPosts,
-  getSinglePost,
+  getPost,
   createPost,
-  updateSinglePost,
-  deleteSinglePost,
+  updatePost,
+  deletePost,
 };

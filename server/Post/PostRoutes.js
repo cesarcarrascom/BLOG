@@ -1,21 +1,23 @@
 const router = require("express").Router();
 
+const { isAuthenticated } = require("../middlewares/authentication");
+
 const {
   getAllPosts,
-  getSinglePost,
+  getPost,
   createPost,
-  updateSinglePost,
-  deleteSinglePost,
+  updatePost,
+  deletePost,
 } = require("./PostController");
 
 router.get("/", getAllPosts);
 
-router.get("/:id", getSinglePost);
+router.get("/:id", getPost);
 
-router.post("/", createPost);
+router.post("/", isAuthenticated, createPost);
 
-router.patch("/:id", updateSinglePost);
+router.patch("/:id", isAuthenticated, updatePost);
 
-router.delete("/:id", deleteSinglePost);
+router.delete("/:id", isAuthenticated, deletePost);
 
 module.exports = router;
